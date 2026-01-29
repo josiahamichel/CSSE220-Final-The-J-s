@@ -15,10 +15,14 @@ public class GameWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
-		frame.add(new GameComponent(model));
+		GameComponent component = new GameComponent(model);
+		frame.add(component);
+		int tileSize = 64;
+		
+		int width = model.getCols() * tileSize + 16;
+		int height = model.getRows() * tileSize + 39;
 
-
-		frame.setSize(600, 600);
+		frame.setSize(width, height);
 		frame.setLocationRelativeTo(null); // center on screen (nice UX, still minimal)
 		frame.setVisible(true);
 		}
