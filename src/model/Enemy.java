@@ -21,7 +21,6 @@ public class Enemy implements Collidable{
 	private int dx = 1;
 	private int dy = 0;
 	
-	
 	public Enemy(int x, int y, int radius) {
 		this.x = x;
 		this.y = y;
@@ -48,10 +47,8 @@ public class Enemy implements Collidable{
 	private static void loadSpriteOnce() {
 		if (triedLoad) return;
 		triedLoad = true;
-
 		try {
-		// tennis.png must be in the SAME package as Ball.java
-		sprite = ImageIO.read(Enemy.class.getResource("EnemyF1.png"));
+		sprite = ImageIO.read(Enemy.class.getResource("/ui/EnemyF1.png"));
 		} catch (IOException | IllegalArgumentException ex) {
 		sprite = null; 
 		}
@@ -63,9 +60,7 @@ public class Enemy implements Collidable{
 	x += dx;
 	y += dy;
 
-
 	int diameter = radius * 2;
-
 
 	// Left wall
 	if (x < 0) {
@@ -77,7 +72,6 @@ public class Enemy implements Collidable{
 	x = worldWidth - diameter;
 	dx = -dx;
 	}
-
 
 	// Top wall
 	if (y < 0) {
@@ -91,7 +85,5 @@ public class Enemy implements Collidable{
 	}
 	}
 	
-	
-}
 	
 }
