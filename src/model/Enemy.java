@@ -56,7 +56,6 @@ public class Enemy implements Collidable{
 	
 	@Override
 	public void update(int worldWidth, int worldHeight) {
-	// move first
 	x += dx;
 	y += dy;
 
@@ -64,9 +63,10 @@ public class Enemy implements Collidable{
 
 	// Left wall
 	if (x < 0) {
-	x = 0; // clamp
+	x = 0;
 	dx = -dx;
 	}
+	
 	// Right wall
 	else if (x + diameter > worldWidth) {
 	x = worldWidth - diameter;
@@ -78,6 +78,7 @@ public class Enemy implements Collidable{
 	y = 0;
 	dy = -dy;
 	}
+	
 	// Bottom wall
 	else if (y + diameter > worldHeight) {
 	y = worldHeight - diameter;

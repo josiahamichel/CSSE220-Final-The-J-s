@@ -18,17 +18,18 @@ public class DrawingComponent extends JPanel {
 	// in the field:
 	private Timer timer;
 	
-	public static final int WIDTH = 500;
-	public static final int HEIGHT = 200;
+	public static final int WIDTH = 1000;
+	public static final int HEIGHT = 500;
 	
+	// in DrawingComponent
+	private Enemy e1 = new Enemy(80,100,14);
 	
 	public DrawingComponent() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setOpaque(true);
-		setPreferredSize(new Dimension(500,200));
 		//in constructor:
 		timer = new Timer(10, e -> {
-			Enemy.update(WIDTH, HEIGHT);
+			e1.update(WIDTH, HEIGHT);
 			repaint();
 		});
 		timer.start();
@@ -36,10 +37,6 @@ public class DrawingComponent extends JPanel {
 		setFocusable(true);
 
 	}
-	
-	// in DrawingComponent
-	private Ball ball = new Ball(80,100,14);
-	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -48,23 +45,8 @@ public class DrawingComponent extends JPanel {
 		g2.drawLine(x, y, x, y + 150);
 		  
 		// in paintComponent (after drawing the wall)
-		ball.draw(g2);
+		e1.draw(g2);
 	}
-
-	public void moveLeft() {
-		  x -= step;
-		  repaint();
-		}
-
-		public void moveRight() {
-		  x += step;
-		  repaint();
-		}
-
-		public void reset() {
-		  x = start_x;
-		  repaint();
-		}
 }
 
 
