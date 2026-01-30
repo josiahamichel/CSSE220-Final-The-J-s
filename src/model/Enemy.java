@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import java.util.Random;
 /**
  * Main enemey that moves around and can be pushed by player and cause damage to player
  */
@@ -18,8 +19,8 @@ public class Enemy implements Collidable{
 	private static boolean triedLoad = false;
 	
 	private int x, y, radius;
-	private int dx = 1;
-	private int dy = 0;
+	private int dx = 2;
+	private int dy = 1;
 	
 	public Enemy(int x, int y, int radius) {
 		this.x = x;
@@ -48,7 +49,7 @@ public class Enemy implements Collidable{
 		if (triedLoad) return;
 		triedLoad = true;
 		try {
-		sprite = ImageIO.read(Enemy.class.getResource("/ui/EnemyF1.png"));
+		sprite = ImageIO.read(Enemy.class.getResource("/assets/EnemyF1.png"));
 		} catch (IOException | IllegalArgumentException ex) {
 		sprite = null; 
 		}
@@ -61,6 +62,15 @@ public class Enemy implements Collidable{
 
 	int diameter = radius * 2;
 
+	Random random = new Random();
+	int flipChance = 4; // 3 out of 1000 chance of flipping direction
+	int randInRange = random.nextInt(1000); // flips 1 out of every 100 frames (on average)
+	
+	if (randInRange <= flipChance) {
+		dx = -dx;
+		dy = -dy;
+	}
+	
 	// Left wall
 	if (x < 0) {
 	x = 0;

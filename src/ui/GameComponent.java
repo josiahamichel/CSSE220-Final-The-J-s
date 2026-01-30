@@ -7,8 +7,11 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
+import model.Enemy;
 import model.GameModel;
+
 
 public class GameComponent extends JComponent {
 	private static final int TILE_SIZE = 64;
@@ -19,12 +22,13 @@ public class GameComponent extends JComponent {
 	private Image wallTileImage;
 	private Image backgroundImage;
 	
-	public GameComponent(GameModel model) {
-	this.model = model;
-	loadframeImages();
-	}
-
-
+	private Timer timer;
+	
+	private int height;
+	private int width;
+	
+	private Enemy e1 = new Enemy(80,100,20); // starting x position, starting y position, size (radius)
+	
 	private void loadframeImages() {
 		  // These images are used for drawing the maze and background we will have to add the
 		// player/enemy later but i did not know where to load them
@@ -60,9 +64,23 @@ public class GameComponent extends JComponent {
 	Graphics2D g2 = (Graphics2D) g;
 	drawBackground(g2);
     drawMaze(g2);
-    
+    e1.draw(g2);
 	}
-
+	
+	public GameComponent(GameModel model) {
+		this.model = model;
+		height  = model.getCols() * TILE_SIZE;
+		width = model.getRows() * TILE_SIZE;
+		
+		loadframeImages();
+		timer = new Timer(20, e -> {
+			e1.update(width, height);
+			repaint();
+		});
+		timer.start();
+	}
+	
+	
 	private void drawMaze(Graphics2D g2) { //this is the tiles i did the maze to match the example
 		int[][] maze = model.getMaze();
 
