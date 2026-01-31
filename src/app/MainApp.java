@@ -24,7 +24,6 @@ public class MainApp {
 		JFrame frame = new JFrame("CSSE220 Final Project");
 		GameController gamecontroller = new GameController(frame);
 		GameWindow.show(frame);
-		GameController.paintComponent();
 		// Hint: MainApp should not contain game logic or drawing code
 	}
 }

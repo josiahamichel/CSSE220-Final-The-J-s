@@ -31,8 +31,8 @@ public class GameComponent extends JComponent {
 	private Enemy e1 = new Enemy(80,100,20); // starting x position, starting y position, size (radius)
 	
 	private void loadframeImages() {
-		  // These images are used for drawing the maze and background we will have to add the
-		// player/enemy later but i did not know where to load them
+		  //  These images are used for drawing the maze and background we will have to add the
+		// player/enemy later but i did not know where  to load them
 		openTileImage = loadThis("/assets/OpenTile.png");
 		wallTileImage = loadThis("/assets/WallTile.png");
 	    backgroundImage = loadThis("/assets/Water Background color.png");
