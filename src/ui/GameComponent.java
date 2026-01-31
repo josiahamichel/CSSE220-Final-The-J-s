@@ -10,6 +10,7 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 
 import model.Enemy;
+import model.Player;
 import model.GameModel;
 
 
@@ -65,6 +66,7 @@ public class GameComponent extends JComponent {
 	drawBackground(g2);
     drawMaze(g2);
     e1.draw(g2);
+    
 	}
 	
 	public GameComponent(GameModel model) {

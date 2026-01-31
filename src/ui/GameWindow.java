@@ -6,12 +6,11 @@ import model.GameModel;
 
 public class GameWindow {
 
-	public static void show() {
+	public static void show(JFrame frame) {
 		// Minimal model instance (empty for now, by design)
 		GameModel model = new GameModel();
 
 
-		JFrame frame = new JFrame("CSSE220 Final Project");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
