@@ -5,5 +5,6 @@ package model;
  * 
  */
 public class WallTile extends Tiles {
+	
 
 }

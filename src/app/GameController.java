@@ -41,10 +41,10 @@ public class GameController extends JPanel {
             @Override
             public void keyPressed(KeyEvent e) {
                 switch (e.getKeyCode()) {
-                    case KeyEvent.VK_D -> player.right();
-                    case KeyEvent.VK_A -> player.left();
-                    case KeyEvent.VK_W -> player.up();
-                    case KeyEvent.VK_S -> player.down();
+                    case KeyEvent.VK_D -> player.moveRight();
+                    case KeyEvent.VK_A -> player.moveLeft();
+                    case KeyEvent.VK_W -> player.moveUp();
+                    case KeyEvent.VK_S -> player.moveDown();
                 }
                 // Repaint immediately on key press for better responsiveness
                 repaint(); 

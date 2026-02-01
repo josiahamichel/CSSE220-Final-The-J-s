@@ -3,42 +3,42 @@ package ui;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import model.Enemy;
 import model.Player;
 import model.GameModel;
 
-
 public class GameComponent extends JComponent {
 	private static final int TILE_SIZE = 64;
-	
-	
+
 	private GameModel model;
 	private Image openTileImage;
 	private Image wallTileImage;
 	private Image backgroundImage;
-	
+
 	private Timer timer;
-	
+
 	private int height;
 	private int width;
-	
+
 	private Enemy e1 = new Enemy(80,100,20); // starting x position, starting y position, size (radius)
-	
+	private Player player = new Player(2, 2, TILE_SIZE);
+
 	private void loadframeImages() {
 		  //  These images are used for drawing the maze and background we will have to add the
 		// player/enemy later but i did not know where  to load them
 		openTileImage = loadThis("/assets/OpenTile.png");
 		wallTileImage = loadThis("/assets/WallTile.png");
 	    backgroundImage = loadThis("/assets/Water Background color.png");
-		
 	}
-
 
 	private Image loadThis(String path) {
 		  try {
@@ -56,35 +56,65 @@ public class GameComponent extends JComponent {
 		    System.out.println("Could not read image file: " + path);
 		    return null;
 		  } //same as before if it can not read the image because I had the wrong file type before
-		}
-
+	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
-	super.paintComponent(g);
-	Graphics2D g2 = (Graphics2D) g;
-	drawBackground(g2);
-    drawMaze(g2);
-    e1.draw(g2);
-    
+	    super.paintComponent(g);
+	    Graphics2D g2 = (Graphics2D) g;
+
+	    drawBackground(g2);
+	    drawMaze(g2);
+
+	    // Draw game objects on top of the maze
+	    player.draw(g2);
+	    e1.draw(g2);
 	}
-	
+
 	public GameComponent(GameModel model) {
-		this.model = model;
-		height  = model.getCols() * TILE_SIZE;
-		width = model.getRows() * TILE_SIZE;
-		
-		loadframeImages();
-		timer = new Timer(20, e -> {
+	    this.model = model;
+
+	    // Fix: width uses cols, height uses rows
+	    width = model.getCols() * TILE_SIZE;
+	    height = model.getRows() * TILE_SIZE;
+
+	    loadframeImages();
+
+	    // Make sure this component can receive key input
+	    setFocusable(true);
+
+	    // Add keyboard input for tile-by-tile movement
+	    addKeyListener(new KeyAdapter() {
+	      @Override
+	      public void keyPressed(KeyEvent e) {
+
+	        if (e.getKeyCode() == KeyEvent.VK_D) {
+	          player.moveRight();
+	        } else if (e.getKeyCode() == KeyEvent.VK_A) {
+	          player.moveLeft();
+	        } else if (e.getKeyCode() == KeyEvent.VK_W) {
+	          player.moveUp();
+	        } else if (e.getKeyCode() == KeyEvent.VK_S) {
+	          player.moveDown();
+	        }
+
+	        repaint();
+	      }
+	    });
+
+	    // This helps the key listener actually work after the window shows
+	    SwingUtilities.invokeLater(() -> requestFocusInWindow());
+
+	    // Timer for enemy movement + repaint
+	    timer = new Timer(20, e -> {
 			e1.update(width, height);
 			repaint();
 		});
 		timer.start();
 	}
-	
-	
-	private void drawMaze(Graphics2D g2) { //this is the tiles i did the maze to match the example
-		int[][] maze = model.getMaze();
+
+	private void drawMaze(Graphics2D g2) {
+	    int[][] maze = model.getMaze();
 
 	    for (int row = 0; row < model.getRows(); row++) {
 	      for (int col = 0; col < model.getCols(); col++) {
@@ -99,40 +129,33 @@ public class GameComponent extends JComponent {
 	        }
 	      }
 	    }
-	 }
-
+	}
 
 	private void drawOpenTile(Graphics2D g2, int x, int y) {
-		if (openTileImage != null) {
-		      g2.drawImage(openTileImage, x, y, TILE_SIZE, TILE_SIZE, null);
-		    } else {
-		      g2.drawRect(x, y, TILE_SIZE, TILE_SIZE);
-		    }
-		}
-
+	    if (openTileImage != null) {
+	      g2.drawImage(openTileImage, x, y, TILE_SIZE, TILE_SIZE, null);
+	    } else {
+	      g2.drawRect(x, y, TILE_SIZE, TILE_SIZE);
+	    }
+	}
 
 	private void drawWallTile(Graphics2D g2, int x, int y) {
-		if (wallTileImage != null) {
-		      g2.drawImage(wallTileImage, x, y, TILE_SIZE, TILE_SIZE, null);
-		    } else {
-		      g2.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-		      }
-		}
-
+	    if (wallTileImage != null) {
+	      g2.drawImage(wallTileImage, x, y, TILE_SIZE, TILE_SIZE, null);
+	    } else {
+	      g2.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+	    }
+	}
 
 	private void drawBackground(Graphics2D g2) {
-		if (backgroundImage == null) {
-		      return;
-		    }
+	    if (backgroundImage == null) {
+	      return;
+	    }
 
-		    int width = model.getCols() * TILE_SIZE;
-		    int height = model.getRows() * TILE_SIZE;
-
-		    for (int y = 0; y < height; y += TILE_SIZE) {
-		      for (int x = 0; x < width; x += TILE_SIZE) {
-		        g2.drawImage(backgroundImage, x, y, TILE_SIZE, TILE_SIZE, null);
-		        }
-		      }
-		    }
-	
+	    for (int y = 0; y < height; y += TILE_SIZE) {
+	      for (int x = 0; x < width; x += TILE_SIZE) {
+	        g2.drawImage(backgroundImage, x, y, TILE_SIZE, TILE_SIZE, null);
+	      }
+	    }
+	}
 }
