@@ -1,92 +1,141 @@
 package model;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
-public class Player {
 
-  private int col;
-  private int row;
-  private int tileSize;
-  private int health = 3;
-  private Image sprite;
+/**
+ * Game player character needs to hold at least position, health, and movement information
+ * 
+ */
+public class Player implements Collidable{
+	private int[][] maze = {
+			{1,1,1,1,1,1,1,1,1,1},
+			{1,0,0,0,1,0,0,0,0,1},
+			{1,0,1,0,1,0,1,1,0,1},
+			{1,0,1,0,0,0,0,1,0,1},
+			{1,0,1,1,1,1,0,1,0,1},
+			{1,0,0,0,0,0,0,1,0,1},
+			{1,1,1,1,1,1,0,1,0,1},
+			{1,0,0,0,0,0,0,0,0,1},
+			{1,0,1,1,1,1,1,1,0,1},
+			{1,1,1,1,1,1,1,1,1,1},
+			};
+	
+	private static final int TILE_SIZE = 64;
+	private static final int ALLOWED_OVERLAP_WITH_WALLS = 0; // pixels
+	
+	// ✅ sprite cache (shared by ALL balls)
+	private static BufferedImage sprite = null;
+	private static boolean triedLoad = false;
+	
+	private int x, y, radius;
+	private int step = 5;
 
-  
-  public Player(int startCol, int startRow, int tileSize) {
-    this.col = startCol;
-    this.row = startRow;
-    this.tileSize = tileSize;
+	public Player(int x, int y, int radius) {
+		this.x = x;
+		this.y = y;
+		this.radius = radius;
+		loadSpriteOnce();
+	}
 
-    // Pretty sure it's best to load the sprite once here, not every frame.
-    loadSprite();
-  }
+	public void draw(Graphics2D g2) {
+		if (sprite != null) {
+			// sprite replaces the circle
+			g2.drawImage(sprite, x, y, 2*radius, 2*radius, null);
+		} else {
+			// fallback if sprite failed to load
+			g2.setColor(Color.RED);
+			g2.fillOval(x, y, 2*radius, 2*radius);
+		}
+	}
 
-// catches for imsge failure 
-  private void loadSprite() {
-    try {
-      var url = getClass().getResource("/assets/PlayerF1.png");
 
-      if (url == null) {
-        System.out.println("Missing player sprite: /assets/PlayerF1.png");
-        sprite = null;
-        return;
-      }
+	//    convert position to tile
+	double x_tile = x / TILE_SIZE;
+	double y_tile = y / TILE_SIZE;
 
-      sprite = ImageIO.read(url);
 
-    } catch (IOException e) {
-      System.out.println("Could not read player sprite file.");
-      sprite = null;
-    }
-  }
+	// in enemy class
+	public void moveRight() {
+		double x_tile = (x+step+TILE_SIZE/2-ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		double y_tile = (y+TILE_SIZE/2-ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		if (maze[(int) (Math.round(y_tile))][(int) (Math.round(x_tile))] == 0) {
+			x += step;
+			System.out.println("x " + x_tile + " y " + y_tile);
+		}
+	}
 
-//moves the player based off the maze
+	public void moveLeft() {
+		double x_tile = (x-step+ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		double y_tile = (y+TILE_SIZE/2-ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		if (maze[(int) (Math.round(y_tile))][(int) (Math.round(x_tile))] == 0) {
+			x -= step;
+			System.out.println("x " + x_tile + " y " + y_tile);
+		}
+	}
 
-  public void moveRight() {
-    col = col + 1;
-  }
+	public void moveUp() {
+		double x_tile = (x+TILE_SIZE/2-ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		double y_tile = (y-step+ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		if (maze[(int) (Math.round(y_tile))][(int) (Math.round(x_tile))] == 0) {
+			y -= step;
+			System.out.println("x " + x_tile + " y " + y_tile);
+		}
+	}
 
-  public void moveLeft() {
-    col = col - 1;
-  }
+	public void moveDown() {
+		double x_tile = (x+TILE_SIZE/2-ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		double y_tile = (y+step+TILE_SIZE/2-ALLOWED_OVERLAP_WITH_WALLS) / TILE_SIZE;
+		if (maze[(int) (Math.round(y_tile))][(int) (Math.round(x_tile))] == 0) {
+			y += step;
+			System.out.println("s");
+			System.out.println("x " + x_tile + " y " + y_tile);
+		}
+	}
 
-  public void moveUp() {
-    row = row - 1;
-  }
+	private static void loadSpriteOnce() {
+		if (triedLoad) return;
+		triedLoad = true;
+		try {
+			sprite = ImageIO.read(Enemy.class.getResource("/assets/PlayerF1.png"));
+		} catch (IOException | IllegalArgumentException ex) {
+			sprite = null; 
+		}
+	}
 
-  public void moveDown() {
-    row = row + 1;
-  }
+	@Override
+	public void update(int worldWidth, int worldHeight) {
 
-  public void draw(Graphics2D g2) {
-    int x = col * tileSize;
-    int y = row * tileSize;
+		int diameter = radius * 2;
 
-    if (sprite != null) {
-      g2.drawImage(sprite, x, y, tileSize, tileSize, null);
-    } else {
-      // If the image doesn't load, I still want something visible.
-      g2.fillRect(x, y, tileSize, tileSize);
-    }
-  }
 
-//will do something with these later
+		//    convert position to tile
 
-  public int getCol() {
-    return col;
-  }
+		// Left wall
+		if (x < 0) {
+			x = 0;
+		}
 
-  public int getRow() {
-    return row;
-  }
+		// Right wall
+		else if (x + diameter > worldWidth) {
+			x = worldWidth - diameter;
+		}
 
-  public int getHealth() {
-    return health;
-  }
+		// Top wall
+		if (y < 0) {
+			y = 0;
+		}
 
-  public void takeDamage() {
-    health = health - 1;
-  }
+		// Bottom wall
+		else if (y + diameter > worldHeight) {
+			y = worldHeight - diameter;
+		}
+	}
+
+
 }

@@ -58,7 +58,6 @@ public class Enemy implements Collidable{
 	@Override
 	public void update(int worldWidth, int worldHeight) {
 	x += dx;
-	y += dy;
 
 	int diameter = radius * 2;
 
@@ -66,10 +65,9 @@ public class Enemy implements Collidable{
 	int flipChance = 4; // 3 out of 1000 chance of flipping direction
 	int randInRange = random.nextInt(1000); // flips 1 out of every 100 frames (on average)
 	
-	if (randInRange <= flipChance) {
-		dx = -dx;
-		dy = -dy;
-	}
+//	if (randInRange <= flipChance) {
+//		dx = -dx;
+//	}
 	
 	// Left wall
 	if (x < 0) {
@@ -78,15 +76,9 @@ public class Enemy implements Collidable{
 	}
 	
 	// Right wall
-	else if (x + diameter > worldWidth) {
-	x = worldWidth - diameter;
+	else if (x + diameter > 250) {
+	x = 250 - diameter;
 	dx = -dx;
-	}
-
-	// Top wall
-	if (y < 0) {
-	y = 0;
-	dy = -dy;
 	}
 	
 	// Bottom wall

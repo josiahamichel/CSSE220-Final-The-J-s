@@ -22,7 +22,7 @@ public class MainApp {
 	
 	public void run() {
 		JFrame frame = new JFrame("CSSE220 Final Project");
-		GameController gamecontroller = new GameController(frame);
+//		GameController gamecontroller = new GameController(frame);
 		GameWindow.show(frame);
 		// Hint: MainApp should not contain game logic or drawing code
 	}
