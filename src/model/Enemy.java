@@ -12,81 +12,92 @@ import java.util.Random;
  * Main enemey that moves around and can be pushed by player and cause damage to player
  */
 public class Enemy implements Collidable{
-	
-	
+
+
 	// ✅ sprite cache (shared by ALL balls)
 	private static BufferedImage sprite = null;
 	private static boolean triedLoad = false;
-	
+
 	private int x, y, radius;
 	private int dx = 2;
 	private int dy = 1;
-	
+
 	public Enemy(int x, int y, int radius) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
 		loadSpriteOnce();
 	}
-	
+
 	public void draw(Graphics2D g2) {
 		if (sprite != null) {
-		// sprite replaces the circle
-		g2.drawImage(sprite, x, y, 2*radius, 2*radius, null);
+			// sprite replaces the circle
+			g2.drawImage(sprite, x, y, 2*radius, 2*radius, null);
 		} else {
-		// fallback if sprite failed to load
-		g2.setColor(Color.RED);
-		g2.fillOval(x, y, 2*radius, 2*radius);
+			// fallback if sprite failed to load
+			g2.setColor(Color.RED);
+			g2.fillOval(x, y, 2*radius, 2*radius);
 		}
 	}
-	
+
 	// in enemy class
 	public void move() {
-	  x += dx;
+		x += dx;
 	}
-	
+
 	private static void loadSpriteOnce() {
 		if (triedLoad) return;
 		triedLoad = true;
 		try {
-		sprite = ImageIO.read(Enemy.class.getResource("/assets/EnemyF1.png"));
+			sprite = ImageIO.read(Enemy.class.getResource("/assets/EnemyF1.png"));
 		} catch (IOException | IllegalArgumentException ex) {
-		sprite = null; 
+			sprite = null; 
 		}
 	}
-	
+
 	@Override
 	public void update(int worldWidth, int worldHeight) {
-	x += dx;
+		x += dx;
 
-	int diameter = radius * 2;
+		int diameter = radius * 2;
 
-	Random random = new Random();
-	int flipChance = 4; // 3 out of 1000 chance of flipping direction
-	int randInRange = random.nextInt(1000); // flips 1 out of every 100 frames (on average)
-	
-//	if (randInRange <= flipChance) {
-//		dx = -dx;
-//	}
-	
-	// Left wall
-	if (x < 0) {
-	x = 0;
-	dx = -dx;
+		Random random = new Random();
+		int flipChance = 4; // 3 out of 1000 chance of flipping direction
+		int randInRange = random.nextInt(1000); // flips 1 out of every 100 frames (on average)
+
+		//	if (randInRange <= flipChance) {
+		//		dx = -dx;
+		//	}
+
+		// Left wall
+		if (x < 0) {
+			x = 0;
+			dx = -dx;
+		}
+
+		// Right wall
+		else if (x + diameter > 250) {
+			x = 250 - diameter;
+			dx = -dx;
+		}
+
+		// Bottom wall
+		else if (y + diameter > worldHeight) {
+			y = worldHeight - diameter;
+			dy = -dy;
+		}
 	}
-	
-	// Right wall
-	else if (x + diameter > 250) {
-	x = 250 - diameter;
-	dx = -dx;
+
+	public int getX() {
+		return x;
 	}
-	
-	// Bottom wall
-	else if (y + diameter > worldHeight) {
-	y = worldHeight - diameter;
-	dy = -dy;
+
+	public int getY() {
+		return y;
 	}
+
+	public int getRadius() {
+		return radius;
 	}
-	
-	
+
 }

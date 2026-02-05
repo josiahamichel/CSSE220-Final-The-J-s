@@ -24,17 +24,21 @@ public class Player implements Collidable{
 			{1,0,0,0,0,0,0,0,0,1},
 			{1,0,1,1,1,1,1,1,0,1},
 			{1,1,1,1,1,1,1,1,1,1},
-			};
-	
+	};
+
 	private static final int TILE_SIZE = 64;
 	private static final int ALLOWED_OVERLAP_WITH_WALLS = 0; // pixels
-	
+
 	// ✅ sprite cache (shared by ALL balls)
 	private static BufferedImage sprite = null;
 	private static boolean triedLoad = false;
-	
+
 	private int x, y, radius;
 	private int step = 5;
+
+	private int lives = 3;
+	private long lastHitTimeMs = 0;
+	private static final long HIT_COOLDOWN_MS = 600;
 
 	public Player(int x, int y, int radius) {
 		this.x = x;
@@ -137,5 +141,34 @@ public class Player implements Collidable{
 		}
 	}
 
+	public int getLives() {
+		return lives;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getRadius() {
+		return radius;
+	}
+
+	public boolean canTakeDamage() {
+		long now = System.currentTimeMillis();
+		return (now - lastHitTimeMs) >= HIT_COOLDOWN_MS;
+	}
+
+	public void takeDamage() {
+		if (!canTakeDamage()) {
+			return;
+		}
+
+		lives--;
+		lastHitTimeMs = System.currentTimeMillis();
+	}
 
 }
