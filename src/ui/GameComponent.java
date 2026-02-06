@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -14,6 +15,7 @@ import javax.swing.Timer;
 import model.Enemy;
 import model.Player;
 import model.GameModel;
+import model.Gem;
 
 
 public class GameComponent extends JComponent {
@@ -29,7 +31,7 @@ public class GameComponent extends JComponent {
 
 	private int height;
 	private int width;
-
+	
 
 	private void loadframeImages() {
 		//  These images are used for drawing the maze and background we will have to add the
@@ -37,7 +39,6 @@ public class GameComponent extends JComponent {
 		openTileImage = loadThis("/assets/OpenTile.png");
 		wallTileImage = loadThis("/assets/WallTile.png");
 		backgroundImage = loadThis("/assets/Water Background color.png");
-
 	}
 
 
@@ -68,6 +69,9 @@ public class GameComponent extends JComponent {
 		drawMaze(g2);
 		model.getEnemy().draw(g2);
 		model.getPlayer().draw(g2);
+		for (int index = 0; index < model.getGemsLength(); index++) {
+			model.getGem(index).draw(g2);
+		}
 	}
 
 	public GameComponent(GameModel model) {
@@ -78,8 +82,10 @@ public class GameComponent extends JComponent {
 		loadframeImages();
 		timer = new Timer(20, e -> {
 			model.update();
+			
 			repaint();
 		});
+		
 		timer.start();
 
 		setFocusable(true);

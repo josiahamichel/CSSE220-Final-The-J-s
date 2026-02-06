@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class GameModel {
 	private int[][] maze = {
 			{1,1,1,1,1,1,1,1,1,1},
@@ -18,6 +20,8 @@ public class GameModel {
 
 	private Player player;
 	private Enemy enemy;
+	private ArrayList<Gem> gems = new ArrayList<>();
+	public int score;
 
 	public int[][] getMaze() {
 		return maze;
@@ -32,8 +36,13 @@ public class GameModel {
 	}
 
 	public GameModel() {
+		this.score = 0;
 		player = new Player(80, 525, 20);
 		enemy = new Enemy(80, 80, 20);
+		// adding some gems
+		gems.add(new Gem(1 * TILE_SIZE, 2 * TILE_SIZE, 14));
+		gems.add(new Gem(3 * TILE_SIZE, 5 * TILE_SIZE, 14));
+		gems.add(new Gem(8 * TILE_SIZE, 7 * TILE_SIZE, 14));
 	}
 
 	public void update() {
@@ -61,6 +70,17 @@ public class GameModel {
 					System.out.println("life is now " + after);
 				}
 			}
+			
+
+		}
+		
+		for (int i = 0; i < gems.size(); i++) {
+		    if (player.getBounds().intersects(gems.get(i).getBounds())) {
+		        gems.remove(i);
+		        score += 1;
+		        System.out.println("Score: " + score);
+		        break;
+		    }
 		}
 	}
 
@@ -86,8 +106,14 @@ public class GameModel {
 	public Enemy getEnemy() {
 		return enemy;
 	}
+	
+	public Gem getGem(int index) {
+		return gems.get(index);
+	}
 
-
+	public int getGemsLength() {
+		return gems.size();
+	}
 
 
 
