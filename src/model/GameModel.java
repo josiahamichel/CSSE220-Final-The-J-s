@@ -37,23 +37,29 @@ public class GameModel {
 	}
 
 	public void update() {
-		int gameW = getCols() * TILE_SIZE;
-		int gameH = getRows() * TILE_SIZE;
+		int worldWidth  = 10 * TILE_SIZE;
+		int worldHeight = 10 * TILE_SIZE;
 
-		enemy.update(gameW, gameH);
-		player.update(gameW, gameH);
+		enemy.update(worldWidth, worldHeight);
+		player.update(worldWidth, worldHeight);
 
 		if (circleCollision(player.getX(), player.getY(), player.getRadius(),
 				enemy.getX(), enemy.getY(), enemy.getRadius())) {
 
 			System.out.println("hit eachother");
 
-			int before = player.getLives();
-			player.takeDamage();
-			int after = player.getLives();
 
-			if (before != after) {
-				System.out.println("hit points now" + after);
+			if (player.canTakeDamage()) {
+				player.knockBack(enemy);
+
+				int before = player.getLives();
+				player.takeDamage();
+				int after = player.getLives();
+
+				System.out.println("kocked back");
+				if (before != after) {
+					System.out.println("life is now " + after);
+				}
 			}
 		}
 	}
@@ -80,6 +86,8 @@ public class GameModel {
 	public Enemy getEnemy() {
 		return enemy;
 	}
+
+
 
 
 

@@ -2,6 +2,7 @@ package model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Random;
@@ -45,6 +46,31 @@ public class Player implements Collidable{
 		this.y = y;
 		this.radius = radius;
 		loadSpriteOnce();
+	}
+
+	public void knockBack(Enemy enemy) {
+		int push = 15; // this is how far they get pushed
+
+		int playerCenterX = x + radius;
+		int playerCenterY = y + radius;
+
+		int enemyCenterX = enemy.getX() + enemy.getRadius();
+		int enemyCenterY = enemy.getY() + enemy.getRadius();
+
+
+		// should check if right or left
+		if (playerCenterX > enemyCenterX) {
+			x += push;
+		} else {
+			x -= push;
+		}
+
+		// looking if they are above or below
+		if (playerCenterY > enemyCenterY) {
+			y += push;
+		} else {
+			y -= push;
+		}
 	}
 
 	public void draw(Graphics2D g2) {
@@ -170,5 +196,11 @@ public class Player implements Collidable{
 		lives--;
 		lastHitTimeMs = System.currentTimeMillis();
 	}
+
+	public Rectangle getBounds() {
+		return new Rectangle(x, y, radius * 2, radius * 2);
+	}
+
+
 
 }

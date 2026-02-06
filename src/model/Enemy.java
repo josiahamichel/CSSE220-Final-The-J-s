@@ -2,6 +2,7 @@ package model;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -99,5 +100,10 @@ public class Enemy implements Collidable{
 	public int getRadius() {
 		return radius;
 	}
+	
+	public Rectangle getBounds() {
+		  return new Rectangle(x, y, radius * 2, radius * 2);
+		}
+
 
 }
