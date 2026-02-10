@@ -115,6 +115,11 @@ public class GameModel {
 		return gems.size();
 	}
 
+	public int getScore() {
+
+		return score;
+	}
+
 
 
 }

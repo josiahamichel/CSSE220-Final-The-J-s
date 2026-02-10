@@ -39,7 +39,7 @@ public class Gem implements Collidable{
 		if (triedLoad) return;
 		triedLoad = true;
 		try {
-			sprite = ImageIO.read(Enemy.class.getResource("/assets/EnemyF1.png"));
+			sprite = ImageIO.read(Enemy.class.getResource("/assets/goldgem.png"));
 		} catch (IOException | IllegalArgumentException ex) {
 			sprite = null; 
 		}
