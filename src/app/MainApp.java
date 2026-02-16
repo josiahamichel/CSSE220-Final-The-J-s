@@ -1,12 +1,12 @@
 package app;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.CardLayout;
+import java.awt.Color;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import ui.GameWindow;
-import app.GameController;
+import ui.StartPanel;
 
 /**
  * Class: MainApp
@@ -15,15 +15,35 @@ import app.GameController;
  * Entry point for the final project.
  */
 public class MainApp {
-	private Graphics graphic;
+	private JFrame frame; 
+	
+	public MainApp() {
+		frame = new JFrame("CSSE220 Final Project");
+		JPanel cards = new JPanel(new CardLayout());
+		StartPanel startPanel = new StartPanel();
+		GameController controller = new GameController();
+		cards.add(startPanel, "START");
+		cards.add(controller, "GAME");
+		frame.setContentPane(cards);
+		
+		CardLayout cl = (CardLayout) cards.getLayout();
+		cl.show(cards, "START");
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		startPanel.start.addActionListener(e -> {
+		    controller.startGame();
+		    cl.show(cards, "GAME");
+		});
+	}
+	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() ->new MainApp().run());
 	}
 	
 	public void run() {
-		JFrame frame = new JFrame("CSSE220 Final Project");
-//		GameController gamecontroller = new GameController(frame);
-		GameWindow.show(frame);
-		// Hint: MainApp should not contain game logic or drawing code
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 	}
 }

@@ -28,6 +28,8 @@ public class Gem implements Collidable{
 		if (sprite != null) {
 			// sprite replaces the circle
 			g2.drawImage(sprite, x, y, 2*radius, 2*radius, null);
+			g2.setColor(Color.RED);
+			g2.draw(getBounds());
 		} else {
 			// fallback if sprite failed to load
 			g2.setColor(Color.RED);
@@ -44,7 +46,6 @@ public class Gem implements Collidable{
 			sprite = null; 
 		}
 	}
-	
 	
 	// not used yet
 	@Override
@@ -66,13 +67,11 @@ public class Gem implements Collidable{
 	
 	public Rectangle getBounds() {
 	    Rectangle r = new Rectangle(
-				    x - radius,
-				    y - radius,
+				    x,
+				    y,
 				    radius * 2,
 				    radius * 2
 	    );
 	    return r;
 	}
-
-
 }

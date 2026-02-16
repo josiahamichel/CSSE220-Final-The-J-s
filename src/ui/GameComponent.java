@@ -1,94 +1,65 @@
 package ui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-
-import model.Enemy;
-import model.Player;
+import model.WallTile;
 import model.GameModel;
 import model.Gem;
-import model.Life;
+import model.OpenTile;
 
 
 public class GameComponent extends JComponent {
 	private static final int TILE_SIZE = 64;
-
+	public static final int WIDTH = TILE_SIZE * 10;
+	public static final int HEIGHT = TILE_SIZE * 10;
 
 	private GameModel model;
-	private Image openTileImage;
-	private Image wallTileImage;
-	private Image backgroundImage;
-	private JLabel label;
-	private JTextField field;
-	private JFrame frame;
-	private Player player;
 	private Timer timer;
-	private Life life;
-	private int height;
-	private int width;
-	
-
-	private void loadframeImages() {
-		//  These images are used for drawing the maze and background we will have to add the
-		// player/enemy later but i did not know where  to load them
-		openTileImage = loadThis("/assets/OpenTile.png");
-		wallTileImage = loadThis("/assets/WallTile.png");
-		backgroundImage = loadThis("/assets/Water Background color.png");
-	}
-
-
-	private Image loadThis(String path) {
-		try {
-			var url = getClass().getResource(path);
-
-			if (url == null) {
-				//If something goes wrong i had to add some sort of catch because it was causing stuff to crash
-				System.out.println("Missing image file: " + path);
-				return null;
-			}
-
-			return ImageIO.read(url);
-
-		} catch (IOException e) {
-			System.out.println("Could not read image file: " + path);
-			return null;
-		} //same as before if it can not read the image because I had the wrong file type before
-	}
-
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
-		drawBackground(g2);
-		drawMaze(g2);
-		model.getEnemy().draw(g2);
-		model.getPlayer().draw(g2);
-		for (int index = 0; index < model.getGemsLength(); index++) {
-			model.getGem(index).draw(g2);
+		
+		
+		// Draw Map
+		for (WallTile wall : GameModel.walls) {
+		    wall.draw(g2);
+		}
+		
+		for (OpenTile openTile : GameModel.openTiles) {
+			openTile.draw(g2);
+		}
+		
+		// Draw Player
+		GameModel.player.draw(g2);
+		
+		// Draw Enemies
+		GameModel.enemy.draw(g2);
+		
+//		for (Enemy enemy : enemies) {
+//		    enemy.draw(g2);
+//		}
+		
+		// Draw Gems
+		for (Gem gem : GameModel.gems) {
+		    gem.draw(g2);
 		}
 	}
 
-	public GameComponent(GameModel model) {
-		this.model = model;
-		height  = model.getCols() * TILE_SIZE;
-		width = model.getRows() * TILE_SIZE;
+	public GameComponent() {
+		model = new GameModel();
+
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
 		JLabel label1 = new JLabel("");
         label1.setFont(new Font("Arial", Font.BOLD, 25));
@@ -99,12 +70,11 @@ public class GameComponent extends JComponent {
         label2.setForeground(Color.BLACK);
         label2.setBounds(500, 25, 400, 100);
 		
-		loadframeImages();
+//		loadframeImages();
 		timer = new Timer(20, e -> {
 			model.update();
-			this.player = model.getPlayer(); 
-			int lives = player.getLives();
-			int score = model.getScore();
+			int lives = GameModel.player.getLives();
+			int score = GameModel.score;
 			if (lives == 0) {
 				label1.setText("LIVES:" + lives);
 			    timer.stop();
@@ -130,11 +100,9 @@ public class GameComponent extends JComponent {
 			        this.repaint();
 			}
 			
+			requestFocusInWindow();
 			repaint();
-		});
-		
-		timer.start();
-		
+		});		
 
 		setFocusable(true);
 
@@ -142,73 +110,28 @@ public class GameComponent extends JComponent {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_W) {
-					model.getPlayer().moveUp();;
+					GameModel.player.moveUp();
+					System.out.println("W");
 				}
 				if (e.getKeyCode() == KeyEvent.VK_A) {
-					model.getPlayer().moveLeft();
+					GameModel.player.moveLeft();
+					System.out.println("A");
 				}
 				if (e.getKeyCode() == KeyEvent.VK_S) {
-					model.getPlayer().moveDown();
+					GameModel.player.moveDown();
+					System.out.println("S");
 				}
 				if (e.getKeyCode() == KeyEvent.VK_D) {
-					model.getPlayer().moveRight();
+					GameModel.player.moveRight();
+					System.out.println("D");
 				}
 			}
 			
 		});
 	}
-
-
-	private void drawMaze(Graphics2D g2) { //this is the tiles i did the maze to match the example
-		int[][] maze = model.getMaze();
-
-		for (int row = 0; row < model.getRows(); row++) {
-			for (int col = 0; col < model.getCols(); col++) {
-
-				int x = col * TILE_SIZE;
-				int y = row * TILE_SIZE;
-
-				if (maze[row][col] == 1) {
-					drawWallTile(g2, x, y);
-				} else {
-					drawOpenTile(g2, x, y);
-				}
-			}
-		}
-	}
-
-
-	private void drawOpenTile(Graphics2D g2, int x, int y) {
-		if (openTileImage != null) {
-			g2.drawImage(openTileImage, x, y, TILE_SIZE, TILE_SIZE, null);
-		} else {
-			g2.drawRect(x, y, TILE_SIZE, TILE_SIZE);
-		}
-	}
-
-
-	private void drawWallTile(Graphics2D g2, int x, int y) {
-		if (wallTileImage != null) {
-			g2.drawImage(wallTileImage, x, y, TILE_SIZE, TILE_SIZE, null);
-		} else {
-			g2.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-		}
-	}
-
-
-	private void drawBackground(Graphics2D g2) {
-		if (backgroundImage == null) {
-			return;
-		}
-
-		int width = model.getCols() * TILE_SIZE;
-		int height = model.getRows() * TILE_SIZE;
-
-		for (int y = 0; y < height; y += TILE_SIZE) {
-			for (int x = 0; x < width; x += TILE_SIZE) {
-				g2.drawImage(backgroundImage, x, y, TILE_SIZE, TILE_SIZE, null);
-			}
-		}
+	
+	public void startTimer() {
+	    timer.start();
 	}
 
 }

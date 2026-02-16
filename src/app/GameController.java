@@ -1,43 +1,25 @@
 package app;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import javax.swing.JPanel;
+import ui.GameComponent;
 
 /**
-	 * A control panel that combines the drawing area and the menu.
+	 * A control panel that combines the drawing area.
 	 */
-	public class GameController extends JPanel{
-	/*	private MyMenu menu;
-		private DrawingComponent drawing;
+	public class GameController extends JPanel{	
+		private GameComponent drawing;
 		
-		public Controller() {
+		public GameController() {
+			setBackground(Color.GREEN);
+			setOpaque(true);
 			setLayout(new BorderLayout());
-			menu = new MyMenu();
-			drawing = new DrawingComponent();
-			add(menu, BorderLayout.SOUTH);
+			drawing = new GameComponent();
 			add(drawing, BorderLayout.CENTER);
-			
-			  ButtonListener bl = new ButtonListener();
-			  menu.getLeftButton().addActionListener(bl);
-			  menu.getRightButton().addActionListener(bl);
-			  menu.getResetButton().addActionListener(bl);
 		}
-		
 
-		private class ButtonListener implements ActionListener {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String buttonLabel = e.getActionCommand();
-	      if (buttonLabel.equals("Left")) {
-	        drawing.moveLeft();
-	      } else if (buttonLabel.equals("Right")) {
-	        drawing.moveRight();
-	      } else {
-	        drawing.reset();
-	      }
-			}
-			
-			
+		public void startGame() {
+		    drawing.startTimer();
 		}
-		
-	*/
 	}

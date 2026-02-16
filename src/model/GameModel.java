@@ -1,57 +1,63 @@
 package model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import ui.GameComponent;
 
 public class GameModel {
-	private int[][] maze = {
-			{1,1,1,1,1,1,1,1,1,1},
-			{0,0,0,0,1,0,0,0,0,1},
-			{1,0,1,0,1,0,1,1,0,1},
-			{1,0,1,0,0,0,0,1,0,1},
-			{1,0,1,1,1,1,0,1,0,1},
-			{1,0,0,0,0,0,0,1,0,1},
-			{1,1,1,1,1,1,0,1,0,1},
-			{1,0,0,0,0,0,0,0,0,1},
-			{1,0,1,1,1,1,1,1,0,1},
-			{1,1,1,1,1,1,1,1,1,1}
-	};
-
 	private static final int TILE_SIZE = 64;
-
-	private Player player;
-	private Enemy enemy;
-	private ArrayList<Gem> gems = new ArrayList<>();
-	public int score;
-
-	public int[][] getMaze() {
-		return maze;
-	}
-
-	public int getRows() {
-		return maze.length;
-	}
-
-	public int getCols() {
-		return maze[0].length;
-	}
-
-	public GameModel() {
-		this.score = 0;
-		player = new Player(80, 525, 20);
-		enemy = new Enemy(80, 80, 20);
-		// adding some gems
-		gems.add(new Gem(1 * TILE_SIZE, 2 * TILE_SIZE, 14));
-		gems.add(new Gem(3 * TILE_SIZE, 5 * TILE_SIZE, 14));
-		gems.add(new Gem(8 * TILE_SIZE, 7 * TILE_SIZE, 14));
-	}
+	private static final int ENTITY_SIZE = 20;
+	
+	// Contains map information
+    public static ArrayList<WallTile> walls = new ArrayList<>();
+    public static ArrayList<OpenTile> openTiles = new ArrayList<>();
+	
+	// Player Starting Position
+	public static Player player;
+    private int startX = 100;
+    private int startY = 100;
+    
+    // Contains enemy starting locations
+    public static ArrayList<Enemy> enemies = new ArrayList<>();
+    
+    // for testing, only one enemy
+    public static Enemy enemy;
+	private int startXEnemy = 200;
+    private int startYEnemy = 200;
+    
+    // Contains Gem locations
+    public static ArrayList<Gem> gems = new ArrayList<>();
+    
+    // score
+    public static int score;
+    
+    private int row = 0;
+    
+    public GameModel() {
+    	loadLevel();
+    	
+    	player = new Player(startX,startY,ENTITY_SIZE);
+    	
+    	enemy = new Enemy(startXEnemy,startYEnemy,ENTITY_SIZE); 	
+    }
+    
 
 	public void update() {
 		int worldWidth  = 10 * TILE_SIZE;
 		int worldHeight = 10 * TILE_SIZE;
 
-		enemy.update(worldWidth, worldHeight);
 		player.update(worldWidth, worldHeight);
-
+		enemy.update(worldWidth, worldHeight);
+		
+		// commented out while working with one enemy
+//		for (Enemy enemy : GameComponent.enemies) {
+//			enemy.update(worldWidth, worldHeight);
+//		}
+		
+		
 		if (circleCollision(player.getX(), player.getY(), player.getRadius(),
 				enemy.getX(), enemy.getY(), enemy.getRadius())) {
 
@@ -116,10 +122,53 @@ public class GameModel {
 	}
 
 	public int getScore() {
-
 		return score;
 	}
+	
+	private void loadLevel() {
+		File file = new File("level1.txt");
 
+	    try {
+	    	  Scanner scanner = new Scanner(file);
+	    	  while (scanner.hasNextLine()) {
+	    	    String line = scanner.nextLine();
+	    	      for (int col = 0; col < line.length(); col++) {
+		    	          char c = line.charAt(col);
+		    	          
+		    	          // Generate Map
+		    	          if (c == 'W') {
+		    	        	  walls.add(new WallTile(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE/2));
+		    	        	  System.out.print(c);
+		    	          } else {
+		    	        	  openTiles.add(new OpenTile(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE/2));
+		    	        	  if (c == '#') System.out.print(c);
+		    	          }
+		    	        	  
+		    	          // Add entities
+		    	          if (c == 'P') {
+		    	        	  startX = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+		    	        	  startY = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+		    	        	  System.out.print(c);
+		    	          } else if (c == 'E') {
+			                  enemies.add(new Enemy(col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, ENTITY_SIZE));
+			                  startXEnemy = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+		    	        	  startYEnemy = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+			                  System.out.print(c);
+			              } else if (c == 'G') {
+			            	  gems.add(new Gem(col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, ENTITY_SIZE));
+			            	  System.out.print(c);
+			              }
+	    	        }
+	    	      System.out.println("");
+	    	      row++;
+	    	  }
+
+	    	  scanner.close();
+	    	  
+	    	} catch (FileNotFoundException e) {
+	    	  System.out.println("level1.txt not found");
+	    	}
+	}
 
 
 }

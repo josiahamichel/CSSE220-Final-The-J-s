@@ -14,14 +14,12 @@ import java.util.Random;
  */
 public class Enemy implements Collidable{
 
-
-	// ✅ sprite cache (shared by ALL balls)
 	private static BufferedImage sprite = null;
 	private static boolean triedLoad = false;
 
 	private int x, y, radius;
-	private int dx = 2;
-	private int dy = 1;
+	private int dx = 1;
+	private int dy = 0;
 
 	public Enemy(int x, int y, int radius) {
 		this.x = x;
@@ -34,6 +32,8 @@ public class Enemy implements Collidable{
 		if (sprite != null) {
 			// sprite replaces the circle
 			g2.drawImage(sprite, x, y, 2*radius, 2*radius, null);
+			g2.setColor(Color.RED);
+			g2.draw(getBounds());
 		} else {
 			// fallback if sprite failed to load
 			g2.setColor(Color.RED);
@@ -44,6 +44,8 @@ public class Enemy implements Collidable{
 	// in enemy class
 	public void move() {
 		x += dx;
+		y += dy;
+		
 	}
 
 	private static void loadSpriteOnce() {
@@ -59,33 +61,28 @@ public class Enemy implements Collidable{
 	@Override
 	public void update(int worldWidth, int worldHeight) {
 		x += dx;
+		y += dy;
 
 		int diameter = radius * 2;
-
-		Random random = new Random();
-		int flipChance = 4; // 3 out of 1000 chance of flipping direction
+		
+		int flipChance = 5; // out of 1000 chance of flipping direction	
+		
+		Random random = new Random();	
 		int randInRange = random.nextInt(1000); // flips 1 out of every 100 frames (on average)
-
-		//	if (randInRange <= flipChance) {
-		//		dx = -dx;
-		//	}
-
-		// Left wall
-		if (x < 0) {
-			x = 0;
+		if (randInRange <= flipChance) {
 			dx = -dx;
-		}
-
-		// Right wall
-		else if (x + diameter > 250) {
-			x = 250 - diameter;
-			dx = -dx;
-		}
-
-		// Bottom wall
-		else if (y + diameter > worldHeight) {
-			y = worldHeight - diameter;
+		} else if (randInRange >= 1000-flipChance) {
 			dy = -dy;
+		}
+
+		for (int i = 0; i < GameModel.walls.size(); i++) {
+		    if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
+		    	x -= dx;
+		    	y -= dy;
+				dx = -dx;
+				dy = -dy;
+		        break;
+		    }
 		}
 	}
 
@@ -102,8 +99,12 @@ public class Enemy implements Collidable{
 	}
 	
 	public Rectangle getBounds() {
-		  return new Rectangle(x, y, radius * 2, radius * 2);
-		}
-
-
+	    Rectangle r = new Rectangle(
+				    x,
+				    y,
+				    radius * 2,
+				    radius * 2
+	    );
+	    return r;
+	}
 }
