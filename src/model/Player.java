@@ -35,12 +35,14 @@ public class Player implements Collidable{
 	public void knockBack(Enemy enemy) {
 		int push = 15; // this is how far they get pushed
 
+		int safeX = x;
+		int safeY = y;
+
 		int playerCenterX = x + radius;
 		int playerCenterY = y + radius;
 
 		int enemyCenterX = enemy.getX() + enemy.getRadius();
 		int enemyCenterY = enemy.getY() + enemy.getRadius();
-
 
 		// should check if right or left
 		if (playerCenterX > enemyCenterX) {
@@ -55,7 +57,24 @@ public class Player implements Collidable{
 		} else {
 			y -= push;
 		}
+
+		//if X push hits a wall, undo ONLY X
+		for (WallTile wall : GameModel.walls) {
+			if (getBounds().intersects(wall.getBounds())) {
+				x = safeX;
+				break;
+			}
+		}
+
+		// if Y push hits a wall undo ONLY Y
+		for (WallTile wall : GameModel.walls) {
+			if (getBounds().intersects(wall.getBounds())) {
+				y = safeY;
+				break;
+			}
+		}
 	}
+
 
 	public void draw(Graphics2D g2) {
 		if (sprite != null) {
@@ -69,57 +88,57 @@ public class Player implements Collidable{
 			g2.fillOval(x, y, 2*radius, 2*radius);
 		}
 	}
-	
+
 	// in enemy class
-		public void moveRight() {
-				x += step;
-				for (int i = 0; i < GameModel.walls.size(); i++) {
-				    if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
-				    	x -= step;
-				        break;
-				    }
-				}
-		}
-
-		public void moveLeft() {
+	public void moveRight() {
+		x += step;
+		for (int i = 0; i < GameModel.walls.size(); i++) {
+			if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
 				x -= step;
-				for (int i = 0; i < GameModel.walls.size(); i++) {
-				    if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
-				    	x += step;
-				        break;
-				    }
-				}
+				break;
+			}
 		}
+	}
 
-		public void moveUp() {
+	public void moveLeft() {
+		x -= step;
+		for (int i = 0; i < GameModel.walls.size(); i++) {
+			if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
+				x += step;
+				break;
+			}
+		}
+	}
+
+	public void moveUp() {
+		y -= step;
+		for (int i = 0; i < GameModel.walls.size(); i++) {
+			if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
+				y += step;
+				break;
+			}
+		}
+	}
+
+	public void moveDown() {
+		y += step;
+		for (int i = 0; i < GameModel.walls.size(); i++) {
+			if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
 				y -= step;
-				for (int i = 0; i < GameModel.walls.size(); i++) {
-				    if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
-				    	y += step;
-				        break;
-				    }
-				}
-		}
-
-		public void moveDown() {
-			y += step;
-			for (int i = 0; i < GameModel.walls.size(); i++) {
-			    if (getBounds().intersects(GameModel.walls.get(i).getBounds())) {
-			    	y -= step;
-			        break;
-			    }
+				break;
 			}
 		}
+	}
 
-		private static void loadSpriteOnce() {
-			if (triedLoad) return;
-			triedLoad = true;
-			try {
-				sprite = ImageIO.read(Enemy.class.getResource("/assets/PlayerF1.png"));
-			} catch (IOException | IllegalArgumentException ex) {
-				sprite = null; 
-			}
+	private static void loadSpriteOnce() {
+		if (triedLoad) return;
+		triedLoad = true;
+		try {
+			sprite = ImageIO.read(Enemy.class.getResource("/assets/PlayerF1.png"));
+		} catch (IOException | IllegalArgumentException ex) {
+			sprite = null; 
 		}
+	}
 
 	@Override
 	public void update(int worldWidth, int worldHeight) {
@@ -181,13 +200,13 @@ public class Player implements Collidable{
 	}
 
 	public Rectangle getBounds() {
-	    Rectangle r = new Rectangle(
-				    x,
-				    y,
-				    radius * 2,
-				    radius * 2
-	    );
-	    return r;
+		Rectangle r = new Rectangle(
+				x,
+				y,
+				radius * 2,
+				radius * 2
+				);
+		return r;
 	}
 
 }

@@ -10,83 +10,122 @@ import ui.GameComponent;
 public class GameModel {
 	private static final int TILE_SIZE = 64;
 	private static final int ENTITY_SIZE = 20;
-	
+
 	// Contains map information
-    public static ArrayList<WallTile> walls = new ArrayList<>();
-    public static ArrayList<OpenTile> openTiles = new ArrayList<>();
-	
+	public static ArrayList<WallTile> walls = new ArrayList<>();
+	public static ArrayList<OpenTile> openTiles = new ArrayList<>();
+
 	// Player Starting Position
 	public static Player player;
-    private int startX = 100;
-    private int startY = 100;
-    
-    // Contains enemy starting locations
-    public static ArrayList<Enemy> enemies = new ArrayList<>();
-    
-    // for testing, only one enemy
-    public static Enemy enemy;
-	private int startXEnemy = 200;
-    private int startYEnemy = 200;
-    
-    // Contains Gem locations
-    public static ArrayList<Gem> gems = new ArrayList<>();
-    
-    // score
-    public static int score;
-    
-    private int row = 0;
-    
-    public GameModel() {
-    	loadLevel();
-    	
-    	player = new Player(startX,startY,ENTITY_SIZE);
-    	
-    	enemy = new Enemy(startXEnemy,startYEnemy,ENTITY_SIZE); 	
-    }
-    
+	private int startX = 100;
+	private int startY = 100;
+
+	// Contains enemy starting locations
+	public static ArrayList<Enemy> enemies = new ArrayList<>();
+
+	// for testing, only one enemy
+	//public static Enemy enemy;
+	//private int startXEnemy = 200;
+	//private int startYEnemy = 200;
+
+	// Contains Gem locations
+	public static ArrayList<Gem> gems = new ArrayList<>();
+
+
+	public static ExitTile exit;
+	private int startXExit = 525;
+	private int startYExit = 525;
+
+	// score
+	public static int score;
+
+	public int level = 1;
+
+	private int row = 0;
+
+	public GameModel() {
+		reloadLevel();
+	}
+
+	public void reloadLevel() {
+
+		walls.clear();
+		openTiles.clear();
+		enemies.clear();
+		gems.clear();
+
+		row = 0;
+
+		loadLevel("level" + level + ".txt");
+
+		player = new Player(startX, startY, ENTITY_SIZE);
+
+		// for testing, only one enemy
+		//enemy = new Enemy(startXEnemy, startYEnemy, ENTITY_SIZE);
+
+		exit = new ExitTile(startXExit, startYExit, ENTITY_SIZE);
+
+		level += 1;
+	}
+
 
 	public void update() {
 		int worldWidth  = 10 * TILE_SIZE;
 		int worldHeight = 10 * TILE_SIZE;
 
 		player.update(worldWidth, worldHeight);
-		enemy.update(worldWidth, worldHeight);
-		
+
+		// for testing, only one enemy
+		//enemy.update(worldWidth, worldHeight);
+
+		exit.update(worldWidth, worldHeight);
+
 		// commented out while working with one enemy
-//		for (Enemy enemy : GameComponent.enemies) {
-//			enemy.update(worldWidth, worldHeight);
-//		}
-		
-		
-		if (circleCollision(player.getX(), player.getY(), player.getRadius(),
-				enemy.getX(), enemy.getY(), enemy.getRadius())) {
+		//		for (Enemy enemy : GameComponent.enemies) {
+		//			enemy.update(worldWidth, worldHeight);
+		//		}
 
-			System.out.println("hit eachother");
+		for (Enemy enemy : enemies) {
+			enemy.update(worldWidth, worldHeight);
+		}
 
 
-			if (player.canTakeDamage()) {
-				player.knockBack(enemy);
+		// for testing, only one enemy
+		//if (circleCollision(player.getX(), player.getY(), player.getRadius(),
+		//		enemy.getX(), enemy.getY(), enemy.getRadius())) {
 
-				int before = player.getLives();
-				player.takeDamage();
-				int after = player.getLives();
+		// NEW: collision check against all enemies loaded from the txt file
+		for (Enemy enemy : enemies) {
+			if (circleCollision(player.getX(), player.getY(), player.getRadius(),
+					enemy.getX(), enemy.getY(), enemy.getRadius())) {
 
-				System.out.println("kocked back");
-				if (before != after) {
-					System.out.println("life is now " + after);
+				System.out.println("hit eachother");
+
+
+				if (player.canTakeDamage()) {
+					player.knockBack(enemy);
+
+					int before = player.getLives();
+					player.takeDamage();
+					int after = player.getLives();
+
+					System.out.println("kocked back");
+					if (before != after) {
+						System.out.println("life is now " + after);
+					}
 				}
 			}
-			
-
 		}
-		
+		//}
+
+
 		for (int i = 0; i < gems.size(); i++) {
-		    if (player.getBounds().intersects(gems.get(i).getBounds())) {
-		        gems.remove(i);
-		        score += 1;
-		        System.out.println("Score: " + score);
-		        break;
-		    }
+			if (player.getBounds().intersects(gems.get(i).getBounds())) {
+				gems.remove(i);
+				score += 1;
+				System.out.println("Score: " + score);
+				break;
+			}
 		}
 	}
 
@@ -110,9 +149,18 @@ public class GameModel {
 	}
 
 	public Enemy getEnemy() {
-		return enemy;
+		// for testing, only one enemy
+		//return enemy;
+
+		// checker to return the first enemy if it exists
+		if (enemies.size() > 0) return enemies.get(0);
+		return null;
 	}
-	
+
+	public ExitTile getExitTile() {
+		return exit;
+	}
+
 	public Gem getGem(int index) {
 		return gems.get(index);
 	}
@@ -124,50 +172,59 @@ public class GameModel {
 	public int getScore() {
 		return score;
 	}
-	
-	private void loadLevel() {
-		File file = new File("level1.txt");
 
-	    try {
-	    	  Scanner scanner = new Scanner(file);
-	    	  while (scanner.hasNextLine()) {
-	    	    String line = scanner.nextLine();
-	    	      for (int col = 0; col < line.length(); col++) {
-		    	          char c = line.charAt(col);
-		    	          
-		    	          // Generate Map
-		    	          if (c == 'W') {
-		    	        	  walls.add(new WallTile(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE/2));
-		    	        	  System.out.print(c);
-		    	          } else {
-		    	        	  openTiles.add(new OpenTile(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE/2));
-		    	        	  if (c == '#') System.out.print(c);
-		    	          }
-		    	        	  
-		    	          // Add entities
-		    	          if (c == 'P') {
-		    	        	  startX = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
-		    	        	  startY = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
-		    	        	  System.out.print(c);
-		    	          } else if (c == 'E') {
-			                  enemies.add(new Enemy(col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, ENTITY_SIZE));
-			                  startXEnemy = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
-		    	        	  startYEnemy = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
-			                  System.out.print(c);
-			              } else if (c == 'G') {
-			            	  gems.add(new Gem(col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, ENTITY_SIZE));
-			            	  System.out.print(c);
-			              }
-	    	        }
-	    	      System.out.println("");
-	    	      row++;
-	    	  }
 
-	    	  scanner.close();
-	    	  
-	    	} catch (FileNotFoundException e) {
-	    	  System.out.println("level1.txt not found");
-	    	}
+
+	private void loadLevel(String level) {
+		File file = new File(level);
+
+		try {
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				for (int col = 0; col < line.length(); col++) {
+					char c = line.charAt(col);
+
+					// Generate Map
+					if (c == 'W') {
+						walls.add(new WallTile(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE/2));
+						System.out.print(c);
+					} else {
+						openTiles.add(new OpenTile(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE/2));
+						if (c == '#') System.out.print(c);
+					}
+
+					// Add entities
+					if (c == 'P') {
+						startX = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+						startY = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+						System.out.print(c);
+					} else if (c == 'E') {
+						enemies.add(new Enemy(col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, ENTITY_SIZE));
+
+						// for testing, only one enemy
+						//startXEnemy = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+						//startYEnemy = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+
+						System.out.print(c);
+					} else if (c == 'G') {
+						gems.add(new Gem(col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE, ENTITY_SIZE));
+						System.out.print(c);
+					} else if (c == 'T') {
+						startXExit = col * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+						startYExit = row * TILE_SIZE+TILE_SIZE/2-ENTITY_SIZE;
+						System.out.print(c);
+					}
+				}
+				System.out.println("");
+				row++;
+			}
+
+			scanner.close();
+
+		} catch (FileNotFoundException e) {
+			System.out.println("level1.txt not found");
+		}
 	}
 
 

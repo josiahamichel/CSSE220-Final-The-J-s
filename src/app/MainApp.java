@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import ui.StartPanel;
 
+
 /**
  * Class: MainApp
  * @author Put your team name here
@@ -39,6 +40,7 @@ public class MainApp {
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() ->new MainApp().run());
+
 	}
 	
 	public void run() {
