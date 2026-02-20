@@ -51,19 +51,19 @@ public class Player implements Collidable{
 			x -= push;
 		}
 
-		// looking if they are above or below
-		if (playerCenterY > enemyCenterY) {
-			y += push;
-		} else {
-			y -= push;
-		}
-
-		//if X push hits a wall, undo ONLY X
+		// if X push hits a wall, undo ONLY X
 		for (WallTile wall : GameModel.walls) {
 			if (getBounds().intersects(wall.getBounds())) {
 				x = safeX;
 				break;
 			}
+		}
+
+		// looking if they are above or below
+		if (playerCenterY > enemyCenterY) {
+			y += push;
+		} else {
+			y -= push;
 		}
 
 		// if Y push hits a wall undo ONLY Y
@@ -73,6 +73,8 @@ public class Player implements Collidable{
 				break;
 			}
 		}
+
+		System.out.println("KNOCKBACK: after  x=" + x + " y=" + y);
 	}
 
 
@@ -146,7 +148,7 @@ public class Player implements Collidable{
 		int diameter = radius * 2;
 
 
-		//    convert position to tile
+		//convert position to tile
 
 		// Left wall
 		if (x < 0) {
@@ -208,5 +210,6 @@ public class Player implements Collidable{
 				);
 		return r;
 	}
+
 
 }

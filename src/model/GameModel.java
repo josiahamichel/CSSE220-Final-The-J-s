@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import ui.GameComponent;
 
 public class GameModel {
 	private static final int TILE_SIZE = 64;
@@ -94,22 +93,22 @@ public class GameModel {
 		//if (circleCollision(player.getX(), player.getY(), player.getRadius(),
 		//		enemy.getX(), enemy.getY(), enemy.getRadius())) {
 
-		// NEW: collision check against all enemies loaded from the txt file
+		// collision check against all enemies loaded from the txt file
 		for (Enemy enemy : enemies) {
 			if (circleCollision(player.getX(), player.getY(), player.getRadius(),
 					enemy.getX(), enemy.getY(), enemy.getRadius())) {
 
 				System.out.println("hit eachother");
+				player.knockBack(enemy);
+				System.out.println("kocked back");
+
 
 
 				if (player.canTakeDamage()) {
-					player.knockBack(enemy);
-
 					int before = player.getLives();
 					player.takeDamage();
 					int after = player.getLives();
 
-					System.out.println("kocked back");
 					if (before != after) {
 						System.out.println("life is now " + after);
 					}
