@@ -36,11 +36,16 @@ public class GameModel {
 	private int startYExit = 525;
 
 	// score
-	public static int score;
+	public static int score = 0;
 
 	public int level = 1;
 
 	private int row = 0;
+
+	public double count = 0;
+	public int Tcount = 1;
+	public int Xcount = 0;
+	public int Ycount = 0;
 
 	public GameModel() {
 		reloadLevel();
@@ -58,13 +63,24 @@ public class GameModel {
 		loadLevel("level" + level + ".txt");
 
 		player = new Player(startX, startY, ENTITY_SIZE);
+		System.out.println(startX);
+		System.out.println(startY);
 
 		// for testing, only one enemy
 		//enemy = new Enemy(startXEnemy, startYEnemy, ENTITY_SIZE);
 
 		exit = new ExitTile(startXExit, startYExit, ENTITY_SIZE);
+		System.out.println(startXExit);
+		System.out.println(startYExit);
+
 
 		level += 1;
+	}
+
+	public void restart() {
+		level = 1;
+		score = 0;
+		reloadLevel();
 	}
 
 
@@ -129,7 +145,7 @@ public class GameModel {
 	}
 
 
-	private boolean circleCollision(int x1, int y1, int r1, int x2, int y2, int r2) {
+	public boolean circleCollision(int x1, int y1, int r1, int x2, int y2, int r2) {
 		int cx1 = x1 + r1;
 		int cy1 = y1 + r1;
 		int cx2 = x2 + r2;
@@ -224,6 +240,36 @@ public class GameModel {
 		} catch (FileNotFoundException e) {
 			System.out.println("level1.txt not found");
 		}
+	}
+	public double count() {
+		count += .02;
+		return count;
+	}
+
+
+	public double getCount() {
+		double g = count();
+		return g;
+	}
+
+	public int TileCount() {
+		int k = player.getX();
+		int j = player.getY();
+		if(k != Xcount) {
+			Xcount = k;
+			Ycount = j;
+			Tcount += 1;
+		} else if ( j != Ycount) {
+			Xcount = k;
+			Ycount = j;
+			Tcount += 1;
+		}
+		return Tcount;
+	}
+
+	public int getTileCount() {
+		int g = TileCount();
+		return g;
 	}
 
 

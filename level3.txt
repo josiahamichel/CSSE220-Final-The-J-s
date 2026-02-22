@@ -1,10 +1,10 @@
-##########
-W#E#WG###W
-W#W#W#WW#W
-W#WG##GW#W
+WWWWWWWWWW
+W##d#W##G#W
+W#W###WW#W
+W#G##W#W#W
 W#WWWW#W#W
-W###G##W#W
+W##E#G#W#W
 WWWWWW#W#W
-W#######GW
-WPWWWWWWTW
+W###GGGGGW
+WPW#W#W#TW
 WWWWWWWWWW

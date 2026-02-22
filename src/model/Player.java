@@ -211,5 +211,9 @@ public class Player implements Collidable{
 		return r;
 	}
 
+	public void restart() {
+		lives = 3;
+	}
+
 
 }

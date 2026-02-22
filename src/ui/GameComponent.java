@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -83,10 +85,21 @@ public class GameComponent extends JComponent {
 		label2.setFont(new Font("Arial", Font.BOLD, 25));
 		label2.setForeground(Color.BLACK);
 		label2.setBounds(500, 25, 400, 100);
+		JLabel label3 = new JLabel("");
+		label3.setFont(new Font("Arial", Font.BOLD, 25));
+		label3.setForeground(Color.BLACK);
+		label3.setBounds(000, 00, 400, 100);
+		JLabel label4 = new JLabel("");
+		label4.setFont(new Font("Arial", Font.BOLD, 25));
+		label4.setForeground(Color.BLACK);
+		label4.setBounds(000, 25, 400, 100);
 
 		this.setLayout(null);
 		this.add(label1);
 		this.add(label2);
+		this.add(label3);
+		this.add(label4);
+
 
 		//loadframeImages();
 		timer = new Timer(20, e -> {
@@ -95,8 +108,11 @@ public class GameComponent extends JComponent {
 			this.exit = model.getExitTile();
 			int lives = GameModel.player.getLives();
 			int score = GameModel.score;
+			double count = model.getCount();
+			int Tcount = model.getTileCount();
 			if (score == 5 * level) {
-				if (player.getX() < exit.getX() + 32 && player.getX() > exit.getX() - 32 && player.getY() < exit.getY() + 32 && player.getY() > exit.getY() - 32) {
+				if (model.circleCollision(player.getX(), player.getY(), player.getRadius(),
+						exit.getX(), exit.getY(), exit.getRadius())) {
 					if(level < 3) {
 						level += 1;
 						model.reloadLevel();
@@ -126,16 +142,30 @@ public class GameComponent extends JComponent {
 
 				SwingUtilities.invokeLater(() -> {
 					JLabel label = new JLabel("GAME OVER!");
+					JButton button = new JButton("restart");
 					label.setFont(new Font("Arial", Font.BOLD, 40));
 					label.setForeground(Color.RED);
 					label.setBounds(200, 200, 400, 100);
+					button.setBounds(200, 300, 200,200);
 
 					this.setLayout(null);
 					this.add(label);
+					this.add(button);
 					this.revalidate();
 					this.repaint();
+
+					button.addActionListener(i -> {
+						restart();
+						label.setText("");
+						button.setBounds(0,0,0,0);
+						repaint();
+						timer.start();
+					});
+
 				});
 			} else {
+				label3.setText("Timer:" + Math.round(count));
+				label4.setText("Tiles:" + Tcount);
 				label1.setText("LIVES:" + lives);
 				label2.setText("SCORE:" + score);
 				//this.setLayout(null);
@@ -177,6 +207,13 @@ public class GameComponent extends JComponent {
 
 	public void startTimer() {
 		timer.start();
+	}
+
+	public void restart() {
+		level = 1;
+		model.restart();
+		player.restart();
+
 	}
 
 }
